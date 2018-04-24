@@ -6,26 +6,25 @@ interface
 
 uses
   Classes, SysUtils, FileUtil, Forms, Controls, Graphics, Dialogs, ExtCtrls,
-  Buttons, Grids, StdCtrls, ColorBox, ExtDlgs, ComCtrls, bgrabitmap,
-  BGRABitmapTypes, BGRAGradients, uEMultiTurn, uEGauge, uebutton, uESelector,
-  uEKnob;
+  Buttons, Grids, StdCtrls, ColorBox, ExtDlgs, ComCtrls, IniPropStorage,
+  bgrabitmap, BGRABitmapTypes, BGRAGradients;
 
 type
 
-  { TForm1 }
+  { TIPCoreDrawF }
 
-  TForm1 = class(TForm)
+  TIPCoreDrawF = class(TForm)
     AddListColorText: TBitBtn;
     AddListColorTop: TBitBtn;
     AddListColorBottom: TBitBtn;
-    BitBtn1: TBitBtn;
     ChooseColorBottom1: TStaticText;
     ChooseColorBottom2: TStaticText;
     ColorBox3: TColorBox;
     ColorBox4: TColorBox;
     ComponentName: TEdit;
     infoRGBText: TStaticText;
-    Label1: TLabel;
+    IniPropStorage1: TIniPropStorage;
+    l_Width: TLabel;
     Memo1: TMemo;
     Saveimage: TBitBtn;
     BtnGenerate: TBitBtn;
@@ -34,24 +33,22 @@ type
     ColorBox2: TColorBox;
     infoRGBBottom: TStaticText;
     SavePictureDialog1: TSavePictureDialog;
+    edWidth: TScrollBar;
     Shape1: TShape;
     GridEntity: TStringGrid;
     infoRGBTop: TStaticText;
     ChooseColorTop: TStaticText;
     StaticText1: TStaticText;
-    uEKnob1: TuEKnob;
     UpdateTimer1: TTimer;
     procedure AddListColorBottomClick(Sender: TObject);
     procedure AddListColorTextClick(Sender: TObject);
     procedure AddListColorTopClick(Sender: TObject);
-    procedure BitBtn1Click(Sender: TObject);
     procedure BtnGenerateClick(Sender: TObject);
     procedure ColorBox1Change(Sender: TObject);
     procedure ColorBox2Change(Sender: TObject);
     procedure ColorBox3Change(Sender: TObject);
     procedure ColorBox4Change(Sender: TObject);
     procedure ComponentNameChange(Sender: TObject);
-    procedure ComponentNameEditingDone(Sender: TObject);
     procedure GridEntityCheckboxToggled(sender: TObject; aCol, aRow: Integer;
       aState: TCheckboxState);
     procedure GridEntityEditingDone(Sender: TObject);
@@ -64,34 +61,36 @@ type
       var Editor: TWinControl);
     procedure SaveimageClick(Sender: TObject);
     procedure Shape1Paint(Sender: TObject);
-    procedure uEKnob1Change(Sender: TObject);
+    procedure WidthChange(Sender: TObject);
     procedure UpdateTimer1Timer(Sender: TObject);
   private
     { private declarations }
     Bitmap:TBGRABitmap;
-    procedure DrawImage(r: integer; LColor: TColor);
-    procedure DrawSymbol(x,y:integer;LColor:TColor);
+    procedure DrawSymbol(x,y:integer);
     procedure DrawSignal(SignalName:string;Xi,Xf,Yi,Yf:integer;Direction:String;LineBus:TCheckBoxState;TexColor,LineColor:TColor;VMSB,VLSB:String);
   public
     { public declarations }
   end;
 
 var
-  Form1: TForm1;
+  IPCoreDrawF: TIPCoreDrawF;
 
 implementation
+
+{$R *.lfm}
+
 uses uglobal;
+
 var
   CustomColorNumber:integer;
   CustomColorNumber2:integer;
   CustomColorNumber3:integer;
-  CustomColorNumber4:integer;
-
   Xo,Yo:integer;
-{$R *.lfm}
-{ TForm1 }
 
-procedure TForm1.BtnGenerateClick(Sender: TObject);
+
+{ TIPCoreDrawF }
+
+procedure TIPCoreDrawF.BtnGenerateClick(Sender: TObject);
 var
   R:TRect;
 begin
@@ -100,7 +99,7 @@ begin
 
   Xo:=round(Shape1.Width/8);
   Yo:=round(Shape1.Height*0.02);
-  Drawsymbol(Xo,Yo,clBlue);
+  Drawsymbol(Xo,Yo);
   //DrawImage(50,clBlue);
   {if assigned(Bitmap) then
   begin
@@ -112,7 +111,7 @@ begin
   Shape1.Invalidate;
 end;
 
-procedure TForm1.ColorBox1Change(Sender: TObject);
+procedure TIPCoreDrawF.ColorBox1Change(Sender: TObject);
 var
   R,G,B:Byte;
 begin
@@ -126,7 +125,7 @@ begin
   UpdateImage:=true;
 end;
 
-procedure TForm1.ColorBox2Change(Sender: TObject);
+procedure TIPCoreDrawF.ColorBox2Change(Sender: TObject);
 var
   R,G,B:Byte;
 begin
@@ -140,7 +139,7 @@ begin
   UpdateImage:=true;
 end;
 
-procedure TForm1.ColorBox3Change(Sender: TObject);
+procedure TIPCoreDrawF.ColorBox3Change(Sender: TObject);
 var
   R,G,B:Byte;
 begin
@@ -154,123 +153,55 @@ begin
   UpdateImage:=true;
 end;
 
-procedure TForm1.ColorBox4Change(Sender: TObject);
+procedure TIPCoreDrawF.ColorBox4Change(Sender: TObject);
 begin
   UpdateImage:=true;
 end;
 
-procedure TForm1.ComponentNameChange(Sender: TObject);
+procedure TIPCoreDrawF.ComponentNameChange(Sender: TObject);
 begin
    UpdateImage:=true;
 end;
 
-procedure TForm1.ComponentNameEditingDone(Sender: TObject);
-begin
-
-end;
-
-
-procedure TForm1.AddListColorTopClick(Sender: TObject);
+procedure TIPCoreDrawF.AddListColorTopClick(Sender: TObject);
 var
   NameCustom:string;
 begin
   if (ColorBox1.ItemIndex=0)then
     begin
        NameCustom:= 'Custom_'+IntToStr(CustomColorNumber);
-       ColorBox1.AddItem(NameCustom,TObject(ColorBox1.Selected) );
+       ColorBox1.AddItem(NameCustom,TObject(PtrInt(ColorBox1.Selected)) );
        CustomColorNumber:=CustomColorNumber+1;
 
     end;
 end;
 
-procedure TForm1.BitBtn1Click(Sender: TObject);
-
-var
-  image: TBGRABitmap;
-  c: TBGRAPixel;
-  i:integer;
-begin
-  //shape1.Repaint;
-   //image1.Canvas.FillRect(10,10,20,20);
- //Memo1.Lines.Clear;
- {for i:=0 to length(DataEntity) - 1  do
-  begin
-
-   if (DataEntity[i].Add=cbChecked) and (DataEntity[i].PortName<>'') then
-    begin
-
-    end;
-
-
-  {if (DataEntity[i].Add=cbChecked) and (DataEntity[i].PortName<>'') then
-    begin
-       Memo1.Lines.Add('line'+IntToStr(i)+'  Portname:'+DataEntity[i].PortName+'   Direction:'+DataEntity[i].Direction+' MSB:'+DataEntity[i].MSB +' LSB:'+DataEntity[i].LSB );
-    end;
-   }
-  end;}
-
-
-
-
-
-
- { image := TBGRABitmap.Create(100,100);
-  c := ColorToBGRA(ColorToRGB(clBtnText)); //retrieve default text color
-
-  image.FontHeight := 10;
-  image.FontAntialias := true;
-  image.FontStyle := [fsBold];
-  image.TextOut(10,10,'Hello world',c);
-  image.SetPixel(5,5,c);
-
-  image.Draw(Canvas,0,0,false);
-  image.free;
-  }
-{var
-  image: TBGRABitmap;
-  c: TBGRAPixel;
-begin
-  image := TBGRABitmap.Create(Shape1.Width-2*Xi,Shape1.Height-2*Yi,ColorToBGRA(ColorToRGB(clBtnFace)));
-  c := ColorToBGRA(ColorToRGB(clBtnText)); //retrieve default text color
-
-  image.FontHeight := 30;
-  image.FontAntialias := true;
-  image.FontStyle := [fsBold];
-  image.TextOut(Shape1.Width-2*Xi,Shape1.Height-2*Yi,'Hello world',c);
-  image.SetPixel(5,5,c);
-
-  Bitmap.PutImage(Xi,Yi,image,dmDrawWithTransparency);
-  image.free;}
-end;
-
-
-procedure TForm1.AddListColorBottomClick(Sender: TObject);
+procedure TIPCoreDrawF.AddListColorBottomClick(Sender: TObject);
 var
   NameCustom:string;
 begin
   if (ColorBox2.ItemIndex=0)then
-    begin
+  begin
        NameCustom:= 'Custom_'+IntToStr(CustomColorNumber2);
-       ColorBox2.AddItem(NameCustom,TObject(ColorBox2.Selected) );
+       ColorBox2.AddItem(NameCustom,TObject(PtrInt(ColorBox2.Selected)));
        CustomColorNumber2:=CustomColorNumber2+1;
-    end;
-
+  end;
 end;
 
-procedure TForm1.AddListColorTextClick(Sender: TObject);
+procedure TIPCoreDrawF.AddListColorTextClick(Sender: TObject);
 var
   NameCustom:string;
 begin
   if (ColorBox3.ItemIndex=0)then
     begin
        NameCustom:= 'Custom_'+IntToStr(CustomColorNumber2);
-       ColorBox3.AddItem(NameCustom,TObject(ColorBox3.Selected) );
+       ColorBox3.AddItem(NameCustom,TObject(PtrInt(ColorBox3.Selected)));
        CustomColorNumber3:=CustomColorNumber3+1;
     end;
 
 end;
 
-procedure TForm1.GridEntityCheckboxToggled(sender: TObject; aCol,
+procedure TIPCoreDrawF.GridEntityCheckboxToggled(sender: TObject; aCol,
   aRow: Integer; aState: TCheckboxState);
 begin
     if (ARow > 0) and (ACol = PosCheckBox) then
@@ -281,7 +212,7 @@ begin
     UpdateImage:=true;
 end;
 
-procedure TForm1.GridEntityEditingDone(Sender: TObject);
+procedure TIPCoreDrawF.GridEntityEditingDone(Sender: TObject);
 var
   tmpGrid: TStringGrid;
   aRow,aCol:integer;
@@ -319,7 +250,7 @@ begin
      UpdateImage:=true;
 end;
 
-procedure TForm1.GridEntityGetCheckboxState(Sender: TObject; ACol,
+procedure TIPCoreDrawF.GridEntityGetCheckboxState(Sender: TObject; ACol,
   ARow: Integer; var Value: TCheckboxState);
 begin
   if (ARow > 0) and (ACol = PosCheckBox) then
@@ -329,40 +260,7 @@ begin
   UpdateImage:=true;
 end;
 
-procedure TForm1.DrawImage(r:integer;LColor:TColor);
-var
-  mask: TBGRABitmap;
-  layer: TBGRABitmap;
-  TextsMask:TBGRABitmap;
-  LinesMask:TBGRABitmap;
-  Efect:TRoundRectangleOptions;
-begin
-
-    layer:=TBGRABitmap.Create(Shape1.Width, Shape1.Height);
-
-    layer.GradientFill(0,0,layer.Width,layer.Height,
-                       ColorToBGRA(ColortoRGB(LColor),255),ColorToBGRA(ColortoRGB(LColor),0),
-                       gtRadial,PointF(layer.Width/2,layer.Height/2),PointF(0,3*layer.Height/4),
-                       dmSet);
-    Bitmap.PutImage(0,0,layer,dmDrawWithTransparency);
-    layer.free;
-
-
-    layer:=TBGRABitmap.Create(Shape1.Width-2*r, Shape1.Height-2*r);
-    layer.GradientFill(0,0,layer.Width,layer.Height,
-                       ColorToBGRA(ColortoRGB(LColor)),BGRA(0,0,0),
-                       gtRadial,PointF(layer.Width/2,layer.Height/2),PointF(layer.Width*1.5,layer.Height*1.5),
-                       dmSet);
-    mask := TBGRABitmap.Create(layer.Width,layer.Height,BGRABlack);
-    mask.FillRoundRectAntialias(0,0,layer.Width,layer.Height,r/2,r/2,BGRAWhite);
-    layer.ApplyMask(mask);
-    mask.Free;
-    Bitmap.PutImage(r,r,layer,dmDrawWithTransparency);
-    layer.free;
-
-end;
-
-procedure TForm1.DrawSymbol(x, y: integer; LColor: TColor);
+procedure TIPCoreDrawF.DrawSymbol(x, y: integer);
 
 function Interp256(value1,value2,position: integer): integer; inline;
 begin
@@ -377,48 +275,33 @@ begin
      result.alpha := Interp256(color1.alpha,color2.alpha, position);
 end;
 
-function CreateWoodTexture(tx,ty: integer;ColorTop,ColorBottom:TColor): TBGRABitmap;
+function CreateGradient(tx,ty: integer;ColorTop,ColorBottom:TColor): TBGRABitmap;
 var
-  colorOscillation, globalColorVariation: integer;
-  p: PBGRAPixel;
-  i: Integer;
   AGradInfo: array [0..1] of TnGradientInfo;
   BGRAcolor: TBGRAPixel;
 begin
+  AGradInfo[0].Direction:=gdVertical;
+  AGradInfo[0].endPercent:=1.0;
+  AGradInfo[0].StartColor:=ColorToBGRA(ColortoRGB(ColorTop)); //TColor($D69700)  BGRA(0,0,0,200);
 
- AGradInfo[0].Direction:=gdVertical;
- AGradInfo[0].endPercent:=1.0;
- AGradInfo[0].StartColor:=ColorToBGRA(ColortoRGB(ColorTop)); //TColor($D69700)  BGRA(0,0,0,200);
- //Obtiene los componentes RGB del color seleccionado
- RedGreenBlue(ColorBottom,BGRAcolor.red,BGRAcolor.green,BGRAcolor.blue);
- BGRAcolor.alpha:=100;
- AGradInfo[0].StopColor:= BGRAcolor;
+  //Obtiene los componentes RGB del color seleccionado
+  RedGreenBlue(ColorBottom,BGRAcolor.red,BGRAcolor.green,BGRAcolor.blue);
+  BGRAcolor.alpha:=100;
+  AGradInfo[0].StopColor:= BGRAcolor;
 
- AGradInfo[1].Direction:=gdVertical;
- AGradInfo[1].endPercent:=1.0;
- AGradInfo[1].StartColor:=ColorToBGRA(ColortoRGB(clwhite)); //BGRA(0,0,0,100);
- AGradInfo[1].StopColor:=BGRA(0,0,0,100); // BGRA(255,255,255,50);
+  AGradInfo[1].Direction:=gdVertical;
+  AGradInfo[1].endPercent:=1.0;
+  AGradInfo[1].StartColor:=ColorToBGRA(ColortoRGB(clwhite)); //BGRA(0,0,0,100);
+  AGradInfo[1].StopColor:=BGRA(0,0,0,100); // BGRA(255,255,255,50);
 
   result := nGradientAlphaFill(tx,ty,gdVertical,AGradInfo[0]);
-  {p := result.Data;
-  for i := 0 to result.NbPixels-1 do
-  begin
-    {colorOscillation := round(sqrt((sin(p^.red*Pi/16)+1)/2)*256);
-    globalColorVariation := p^.red;
-    p^:= Interp256( Interp256(BGRA(247,188,120),BGRA(255,218,170),colorOscillation),
-                    Interp256(BGRA(157,97,60),BGRA(202,145,112),colorOscillation), globalColorVariation);
-                    }
-    inc(p);
-  end; }
 end;
 
 var
   mask: TBGRABitmap;
   layer: TBGRABitmap;
-  TextsMask:TBGRABitmap;
-  LinesMask:TBGRABitmap;
   tex:TBGRABitmap;
-  i,j:integer;
+  i:integer;
   R:TRect;
   //
    c: TBGRAPixel;
@@ -450,7 +333,7 @@ begin
    //
     //Dibujando shadow.
    { layer:=TBGRABitmap.Create(Shape1.Width-2*x+10, Shape1.Height-2*y+10);
-    tex := CreateWoodTexture(layer.Width,layer.Height,clGray,clGray);
+    tex := CreateGradient(layer.Width,layer.Height,clGray,clGray);
     layer.FillRoundRectAntialias(0,0,Shape1.Width-2*x+3,Shape1.Height-2*y+1,Shape1.Width*0.04,Shape1.Width*0.04,tex);
 
     Bitmap.PutImage(x-1,y+1,layer,dmLinearBlend,220);
@@ -459,7 +342,7 @@ begin
     // dibijando el componente
     layer:=TBGRABitmap.Create(Shape1.Width-2*x, Shape1.Height-2*y);
 
-    tex := CreateWoodTexture(layer.Width,layer.Height,ColorBox1.Selected,ColorBox2.Selected);
+    tex := CreateGradient(layer.Width,layer.Height,ColorBox1.Selected,ColorBox2.Selected);
     layer.FillRoundRectAntialias(1,1,Shape1.Width-2*x-3,Shape1.Height-2*y-3,Shape1.Width*0.04,Shape1.Width*0.04,tex);
     layer.RoundRectAntialias(1,1,Shape1.Width-2*x-3,Shape1.Height-2*y-3,Shape1.Width*0.04,Shape1.Width*0.04,BGRA(0,0,0),4);
     //layer.RoundRect(1,1,Shape1.Width-2*x-3,Shape1.Height-2*y-3,20,20,BGRA(80,80,80),dmDrawWithTransparency);
@@ -542,7 +425,7 @@ begin
 
 end;
 
-procedure TForm1.DrawSignal(SignalName: string; Xi, Xf, Yi, Yf: integer;
+procedure TIPCoreDrawF.DrawSignal(SignalName: string; Xi, Xf, Yi, Yf: integer;
   Direction: String; LineBus: TCheckBoxState; TexColor, LineColor: TColor;
   VMSB, VLSB: String);
 var
@@ -603,7 +486,7 @@ begin
   layer.FontName:='Arial';
   layer.FontHeight := 14;
   layer.FontAntialias := True;
-  //layer.FontStyle := [fsBold];
+  layer.FontStyle := [fsBold];
   if (Direction='in')then
      begin
        if (LineBus=cbChecked) and not(VMSB='') and not(VLSB='') then
@@ -629,15 +512,17 @@ begin
 
 end;
 
-procedure TForm1.FormCreate(Sender: TObject);
+procedure TIPCoreDrawF.FormCreate(Sender: TObject);
 var
   i:integer;
   j:integer;
   R,G,B:Byte;
 
 begin
-
-
+  {$IFDEF LINUX}
+  Font.Size:=10;
+  {$ENDIF}
+  IP_Image_width:=edWidth.Position;
   Bitmap:=TBGRABitmap.Create(Shape1.width,Shape1.height);
   SetLength(DataEntity, GridEntity.RowCount - 1);
   j:=0;
@@ -693,7 +578,6 @@ begin
   CustomColorNumber:=1;
   CustomColorNumber2:=1;
   CustomColorNumber3:=1;
-  CustomColorNumber4:=1;
   RedGreenBlue(ColorBox1.Selected,R,G,B);
   infoRGBTop.Caption:= 'R: '+ Format('%.3d',[R])+' G: '+ Format('%.3d',[G])+ ' B: '+ Format('%.3d',[B]) ;
   RedGreenBlue(ColorBox2.Selected,R,G,B);
@@ -704,20 +588,21 @@ begin
   ColorBox2.AddItem('Custom_0', Tobject($00FFCB51));
   ColorBox1.AddItem('Custom_0', Tobject($00D69700));
   ColorBox2.Selected:=Tcolor($00FFCB51);
-  ColorBox1.Selected:=Tcolor($00D69700);
+//  ColorBox1.Selected:=Tcolor($00D69700);
+  ColorBox1.Selected:=clWhite;
 
   // iniciando valores para el bloque
-  Xo:=round(Shape1.Width/4);
-  Yo:=round(Shape1.Height*0.02);
+  //Xo:=round(Shape1.Width/4);
+  //Yo:=round(Shape1.Height*0.02);
 
 end;
 
-procedure TForm1.FormDestroy(Sender: TObject);
+procedure TIPCoreDrawF.FormDestroy(Sender: TObject);
 begin
   if assigned(Bitmap) then FreeAndNil(Bitmap);
 end;
 
-procedure TForm1.GridEntityPickListSelect(Sender: TObject);
+procedure TIPCoreDrawF.GridEntityPickListSelect(Sender: TObject);
 var
   tmpGrid: TStringGrid;
   aRow,aCol:integer;
@@ -730,7 +615,7 @@ begin
   // ShowMessage('aCol'+IntToStr(aCol)+ ' aROW' + IntToStr(aRow) );
 end;
 
-procedure TForm1.GridEntitySelectEditor(Sender: TObject; aCol, aRow: Integer;
+procedure TIPCoreDrawF.GridEntitySelectEditor(Sender: TObject; aCol, aRow: Integer;
   var Editor: TWinControl);
 begin
   if (ARow > 0) and (ACol = PosPortname) then
@@ -742,7 +627,7 @@ begin
 
 end;
 
-procedure TForm1.SaveimageClick(Sender: TObject);
+procedure TIPCoreDrawF.SaveimageClick(Sender: TObject);
 //var
 //FileRGB:TBGRABitmap;
 begin
@@ -762,7 +647,7 @@ begin
   //FileRGB.Free;
 end;
 
-procedure TForm1.Shape1Paint(Sender: TObject);
+procedure TIPCoreDrawF.Shape1Paint(Sender: TObject);
 var
   R:TRect;
 
@@ -775,29 +660,26 @@ begin
   end;
 end;
 
-procedure TForm1.uEKnob1Change(Sender: TObject);
+procedure TIPCoreDrawF.WidthChange(Sender: TObject);
 begin
-  IP_Image_width:= Round(ueKnob1.Position);
   UpdateImage:=true;
 end;
 
 
-procedure TForm1.UpdateTimer1Timer(Sender: TObject);
+procedure TIPCoreDrawF.UpdateTimer1Timer(Sender: TObject);
 begin
-
-   if(UpdateImage) then
-     begin
-       UpdateImage:=false;
-       ueKnob1.Position:= (IP_Image_width);
-       Memo1.Lines.Add( FloatToStr(IP_Image_width) );
-       Bitmap.Fill(BGRAPixelTransparent);
-       Xo:=round(Shape1.Width/(IP_Image_width/10));
-       //Yo:=round(Shape1.Height*0.02);
-       Yo:=round(Shape1.Height*0.001);
-       Drawsymbol(Xo,Yo,clBlue);
-       Shape1.Invalidate;
-     end;
-
+  if(UpdateImage) then
+  begin
+    UpdateImage:=false;
+    IP_Image_width:= Round(edWidth.Position);
+    l_width.Caption:= 'Width: '+inttostr(IP_Image_width);
+    Memo1.Lines.Add(inttostr(IP_Image_width));
+    Bitmap.Fill(BGRAPixelTransparent);
+    Xo:=(Shape1.Width-IP_Image_width) div 2;
+    Yo:=10;
+    Drawsymbol(Xo,Yo);
+    Shape1.Invalidate;
+  end;
 end;
 
 end.

@@ -13,9 +13,11 @@ uses
 {$R *.res}
 
 begin
-  RequireDerivedFormResource := True;
+  Application.Scaled:=True;
+//  Application.Scaled:=True;
+//  RequireDerivedFormResource := True;
   Application.Initialize;
-  Application.CreateForm(TForm1, Form1);
+  Application.CreateForm(TIPCoreDrawF, IPCoreDrawF);
   Application.Run;
 end.
 

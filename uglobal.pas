@@ -19,7 +19,7 @@ type
 
 var
   DataEntity: array of TMyInput;
-  IP_Image_width:Real;
+  IP_Image_width:Integer;
   UpdateImage:Boolean;
 const
   PosAdd = 0;
