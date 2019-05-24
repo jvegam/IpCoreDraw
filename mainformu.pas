@@ -18,14 +18,13 @@ type
     AddListColorTop: TBitBtn;
     AddListColorBottom: TBitBtn;
     ChooseColorBottom1: TStaticText;
-    ChooseColorBottom2: TStaticText;
+    LChooseColor: TStaticText;
     ColorBox3: TColorBox;
-    ColorBox4: TColorBox;
+    BoxChooseColor: TColorBox;
     ComponentName: TEdit;
     infoRGBText: TStaticText;
     IniPropStorage1: TIniPropStorage;
     l_Width: TLabel;
-    Memo1: TMemo;
     Saveimage: TBitBtn;
     BtnGenerate: TBitBtn;
     ChooseColorBottom: TStaticText;
@@ -47,7 +46,7 @@ type
     procedure ColorBox1Change(Sender: TObject);
     procedure ColorBox2Change(Sender: TObject);
     procedure ColorBox3Change(Sender: TObject);
-    procedure ColorBox4Change(Sender: TObject);
+    procedure BoxChooseColorChange(Sender: TObject);
     procedure ComponentNameChange(Sender: TObject);
     procedure GridEntityCheckboxToggled(sender: TObject; aCol, aRow: Integer;
       aState: TCheckboxState);
@@ -153,7 +152,7 @@ begin
   UpdateImage:=true;
 end;
 
-procedure TIPCoreDrawF.ColorBox4Change(Sender: TObject);
+procedure TIPCoreDrawF.BoxChooseColorChange(Sender: TObject);
 begin
   UpdateImage:=true;
 end;
@@ -351,7 +350,7 @@ begin
                        gtRadial,PointF(layer.Width/2,layer.Height/2),PointF(layer.Width*1.5,layer.Height*1.5),
                        dmSet);   }
      // Inicio Component name
-     c := ColorToBGRA(ColorToRGB(ColorBox4.Selected)); //retrieve default text color
+     c := ColorToBGRA(ColorToRGB(BoxChooseColor.Selected)); //retrieve default text color
      layer.FontHeight := 18;
      layer.FontAntialias := True;
      layer.FontStyle := [fsBold];
@@ -673,7 +672,6 @@ begin
     UpdateImage:=false;
     IP_Image_width:= Round(edWidth.Position);
     l_width.Caption:= 'Width: '+inttostr(IP_Image_width);
-    Memo1.Lines.Add(inttostr(IP_Image_width));
     Bitmap.Fill(BGRAPixelTransparent);
     Xo:=(Shape1.Width-IP_Image_width) div 2;
     Yo:=10;

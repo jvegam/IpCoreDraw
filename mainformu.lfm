@@ -1,11 +1,11 @@
 object IPCoreDrawF: TIPCoreDrawF
-  Left = 997
-  Height = 423
-  Top = 479
+  Left = 879
+  Height = 437
+  Top = 376
   Width = 785
   BorderStyle = bsDialog
   Caption = 'IPCoreDraw'
-  ClientHeight = 423
+  ClientHeight = 437
   ClientWidth = 785
   Icon.Data = {
     362A00000000010002003030000001002000A825000026000000101000000100
@@ -351,11 +351,11 @@ object IPCoreDrawF: TIPCoreDrawF
   OnDestroy = FormDestroy
   Position = poScreenCenter
   SessionProperties = 'ColorBox1.Selected;ColorBox2.Selected;ColorBox3.Selected;ColorBox4.Selected;ComponentName.Text;edWidth.Position'
-  LCLVersion = '1.8.3.0'
+  LCLVersion = '2.0.3.0'
   object BtnGenerate: TBitBtn
     Left = 680
     Height = 24
-    Top = 384
+    Top = 387
     Width = 96
     Caption = 'Draw'
     OnClick = BtnGenerateClick
@@ -372,10 +372,11 @@ object IPCoreDrawF: TIPCoreDrawF
   end
   object GridEntity: TStringGrid
     Left = 8
-    Height = 360
+    Height = 374
     Top = 48
     Width = 433
     AlternateColor = 13628158
+    Anchors = [akTop, akLeft, akBottom]
     ColCount = 6
     Columns = <    
       item
@@ -435,7 +436,7 @@ object IPCoreDrawF: TIPCoreDrawF
   object AddListColorTop: TBitBtn
     Left = 625
     Height = 24
-    Top = 270
+    Top = 273
     Width = 40
     Caption = 'Add'
     OnClick = AddListColorTopClick
@@ -445,7 +446,8 @@ object IPCoreDrawF: TIPCoreDrawF
     Left = 552
     Height = 16
     Top = 250
-    Width = 128
+    Width = 100
+    AutoSize = True
     Caption = 'R: 000 G: 000 B: 000'
     TabOrder = 4
   end
@@ -453,14 +455,15 @@ object IPCoreDrawF: TIPCoreDrawF
     Left = 458
     Height = 16
     Top = 250
-    Width = 88
+    Width = 56
+    AutoSize = True
     Caption = 'Color Top:'
     TabOrder = 5
   end
   object ColorBox1: TColorBox
     Left = 458
     Height = 22
-    Top = 270
+    Top = 273
     Width = 161
     DefaultColorColor = clDefault
     Selected = clWhite
@@ -472,23 +475,25 @@ object IPCoreDrawF: TIPCoreDrawF
   object ChooseColorBottom: TStaticText
     Left = 458
     Height = 16
-    Top = 307
-    Width = 88
+    Top = 310
+    Width = 75
+    AutoSize = True
     Caption = 'Color Bottom:'
     TabOrder = 7
   end
   object infoRGBBottom: TStaticText
     Left = 552
     Height = 16
-    Top = 307
-    Width = 128
+    Top = 310
+    Width = 100
+    AutoSize = True
     Caption = 'R: 000 G: 000 B: 000'
     TabOrder = 8
   end
   object AddListColorBottom: TBitBtn
     Left = 625
     Height = 24
-    Top = 328
+    Top = 331
     Width = 40
     Caption = 'Add'
     OnClick = AddListColorBottomClick
@@ -497,7 +502,7 @@ object IPCoreDrawF: TIPCoreDrawF
   object Saveimage: TBitBtn
     Left = 680
     Height = 40
-    Top = 320
+    Top = 323
     Width = 96
     Caption = 'Export...'
     Glyph.Data = {
@@ -638,7 +643,7 @@ object IPCoreDrawF: TIPCoreDrawF
   object ColorBox2: TColorBox
     Left = 456
     Height = 22
-    Top = 328
+    Top = 331
     Width = 160
     DefaultColorColor = clDefault
     Selected = 16763729
@@ -648,26 +653,31 @@ object IPCoreDrawF: TIPCoreDrawF
     TabOrder = 6
   end
   object ComponentName: TEdit
-    Left = 120
+    AnchorSideLeft.Control = StaticText1
+    AnchorSideLeft.Side = asrBottom
+    Left = 118
     Height = 23
     Top = 8
     Width = 120
+    BorderSpacing.Left = 5
     OnChange = ComponentNameChange
     TabOrder = 11
     Text = 'My component'
   end
   object StaticText1: TStaticText
+    AnchorSideLeft.Side = asrBottom
     Left = 8
-    Height = 17
+    Height = 16
     Top = 11
-    Width = 104
+    Width = 105
+    AutoSize = True
     Caption = 'Component Name :'
     TabOrder = 12
   end
   object ColorBox3: TColorBox
     Left = 456
     Height = 22
-    Top = 384
+    Top = 387
     Width = 160
     DefaultColorColor = clDefault
     Style = [cbStandardColors, cbExtendedColors, cbCustomColor, cbPrettyNames, cbCustomColors]
@@ -678,79 +688,76 @@ object IPCoreDrawF: TIPCoreDrawF
   object ChooseColorBottom1: TStaticText
     Left = 458
     Height = 16
-    Top = 364
-    Width = 88
+    Top = 367
+    Width = 57
+    AutoSize = True
     Caption = 'Color Text:'
     TabOrder = 14
   end
   object infoRGBText: TStaticText
     Left = 552
     Height = 16
-    Top = 364
-    Width = 128
+    Top = 367
+    Width = 100
+    AutoSize = True
     Caption = 'R: 000 G: 000 B: 000'
     TabOrder = 15
   end
   object AddListColorText: TBitBtn
     Left = 625
     Height = 24
-    Top = 384
+    Top = 387
     Width = 40
     Caption = 'Add'
     OnClick = AddListColorTextClick
     TabOrder = 16
   end
-  object ColorBox4: TColorBox
-    Left = 304
+  object BoxChooseColor: TColorBox
+    AnchorSideLeft.Control = LChooseColor
+    AnchorSideLeft.Side = asrBottom
+    Left = 288
     Height = 22
     Top = 8
     Width = 120
-    DefaultColorColor = clDefault
+    DefaultColorColor = clWindow
     Style = [cbStandardColors, cbExtendedColors, cbCustomColor, cbPrettyNames, cbCustomColors]
+    BorderSpacing.Left = 5
     ItemHeight = 16
-    OnChange = ColorBox4Change
+    OnChange = BoxChooseColorChange
     TabOrder = 17
   end
-  object ChooseColorBottom2: TStaticText
+  object LChooseColor: TStaticText
+    AnchorSideLeft.Control = ComponentName
+    AnchorSideLeft.Side = asrBottom
     Left = 248
-    Height = 17
+    Height = 16
     Top = 11
-    Width = 41
+    Width = 35
+    AutoSize = True
+    BorderSpacing.Left = 10
     Caption = 'Color :'
     TabOrder = 18
-  end
-  object Memo1: TMemo
-    Left = 72
-    Height = 24
-    Top = 376
-    Width = 192
-    Lines.Strings = (
-      'Memo1'
-    )
-    TabOrder = 19
-    Visible = False
   end
   object l_Width: TLabel
     Left = 680
     Height = 15
-    Top = 290
-    Width = 96
+    Top = 293
+    Width = 32
     Alignment = taCenter
-    AutoSize = False
     Caption = 'Width'
     ParentColor = False
   end
   object edWidth: TScrollBar
     Left = 680
     Height = 11
-    Top = 270
+    Top = 273
     Width = 96
     LargeChange = 10
     Max = 250
     Min = 150
     PageSize = 0
     Position = 150
-    TabOrder = 20
+    TabOrder = 19
     OnChange = WidthChange
   end
   object SavePictureDialog1: TSavePictureDialog
@@ -768,7 +775,7 @@ object IPCoreDrawF: TIPCoreDrawF
   end
   object IniPropStorage1: TIniPropStorage
     StoredValues = <>
-    IniFileName = 'IPCoreDraw.ini'
+    IniFileName = 'ipcoredraw.ini'
     left = 624
     top = 24
   end
